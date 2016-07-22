@@ -1,9 +1,13 @@
 package top.insanecoder.client;
 
+import top.insanecoder.utils.FixLengthWrapper;
+import top.insanecoder.utils.PacketWrapper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -61,10 +65,25 @@ public class NIOTcpClient {
         public void run() {
             System.out.println("Type to send message:");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                socketChannel.socket().setSendBufferSize(102400);
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+            int number = 0;
             while (true) {
                 try {
+                    // take input as the message source
                     String msg = bufferedReader.readLine();
+                    // send the message continuously
+//                    String msg = "hello world " + number++;
+                    // send data normally
                     socketChannel.write(ByteBuffer.wrap(msg.getBytes()));
+                    // add the head represent the data length
+//                    socketChannel.write(ByteBuffer.wrap(new PacketWrapper(msg).getBytes()));
+                    // make the data length fixed
+//                    socketChannel.write(ByteBuffer.wrap(new FixLengthWrapper(msg).getBytes()));
+//                    System.out.println(number);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

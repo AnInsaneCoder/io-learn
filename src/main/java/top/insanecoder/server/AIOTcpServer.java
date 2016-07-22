@@ -18,6 +18,7 @@ public class AIOTcpServer {
     private static final int PORT = 5555;
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        System.out.println("main thread id: " + Thread.currentThread().getId());
         AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(PORT));
 
         serverSocketChannel.accept(serverSocketChannel, new AcceptCompletionHandler());
@@ -41,6 +42,7 @@ public class AIOTcpServer {
         public void completed(AsynchronousSocketChannel result, AsynchronousServerSocketChannel attachment) {
 
             System.out.println("Get a new client!!!");
+            System.out.println("accept thread id: " + Thread.currentThread().getId());
             ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
             result.read(byteBuffer, result, new ReadCompletionHandler(byteBuffer, "client"));
             // start the send thread
